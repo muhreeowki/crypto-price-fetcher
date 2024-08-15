@@ -9,16 +9,19 @@ import (
 	"github.com/muhreeowki/price-fetcher/types"
 )
 
+// Client is a client that fetches the price of a ticker from a remote service.
 type Client struct {
 	endpoint string
 }
 
+// New returns a new client with the given endpoint.
 func New(endpoint string) *Client {
 	return &Client{
 		endpoint: endpoint,
 	}
 }
 
+// FetchPrice fetches the price of a ticker from the provided endpoint.
 func (c *Client) FetchPrice(ctx context.Context, ticker string) (*types.PriceResponse, error) {
 	endpoint := fmt.Sprintf("%s?ticker=%s", c.endpoint, ticker)
 	req, err := http.NewRequest("GET", endpoint, nil)

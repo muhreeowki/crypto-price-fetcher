@@ -17,6 +17,7 @@ type JSONAPIServer struct {
 	listenAddr string
 }
 
+// NewJSONAPIServer returns a new JSONAPIServer with the given listenAddr and price fetcher service
 func NewJSONAPIServer(listenAddr string, svc PriceFetcher) *JSONAPIServer {
 	return &JSONAPIServer{
 		listenAddr: listenAddr,
@@ -24,6 +25,7 @@ func NewJSONAPIServer(listenAddr string, svc PriceFetcher) *JSONAPIServer {
 	}
 }
 
+// Start starts the JSON API server and listens on the given listenAddr
 func (s *JSONAPIServer) Start() {
 	http.HandleFunc("/", makeHTTPHandlerFunc(s.handleFetchPrice))
 
@@ -31,18 +33,7 @@ func (s *JSONAPIServer) Start() {
 	http.ListenAndServe(s.listenAddr, nil)
 }
 
-// makeHTTPHandlerFunc is a function that takes an APIFunc and returns an http.HandlerFunc
-func makeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "requestID", rand.Intn(10000000))
-
-	return func(w http.ResponseWriter, r *http.Request) {
-		if err := apiFn(ctx, w, r); err != nil {
-			writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
-		}
-	}
-}
-
+// handleFetchPrice is a handler function that fetches the price for a given ticker from the price fetcher service
 func (s *JSONAPIServer) handleFetchPrice(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	ticker := r.URL.Query().Get("ticker")
 
@@ -57,6 +48,18 @@ func (s *JSONAPIServer) handleFetchPrice(ctx context.Context, w http.ResponseWri
 	}
 
 	return writeJSON(w, http.StatusOK, &priceResponse)
+}
+
+// makeHTTPHandlerFunc is a function that takes an APIFunc and returns an http.HandlerFunc
+func makeHTTPHandlerFunc(apiFn APIFunc) http.HandlerFunc {
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "requestID", rand.Intn(10000000))
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := apiFn(ctx, w, r); err != nil {
+			writeJSON(w, http.StatusBadRequest, map[string]any{"error": err.Error()})
+		}
+	}
 }
 
 // writeJSON is a function to write a JSON object to the response writer

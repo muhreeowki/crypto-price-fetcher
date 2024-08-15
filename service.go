@@ -16,16 +16,19 @@ type PriceFetcher interface {
 // priceFetcher implements the PriceFetcher interface.
 type priceFetcher struct{}
 
+// coinBaseData is a struct to represent the data returned from the coinbase API.
 type coinBaseData struct {
 	Amount   string
 	Base     string
 	Currency string
 }
 
+// coinBaseResponse is a struct to represent the response returned from the coinbase API.
 type coinBaseResponse struct {
 	Data coinBaseData
 }
 
+// FetchPrice is a method on priceFetcher that fetches the price of a ticker.
 func (s *priceFetcher) FetchPrice(ctx context.Context, ticker string) (float64, error) {
 	// Important to not use types in business logic, do not use json representations
 	return FetchCoinBaseAPI(ctx, ticker)
