@@ -25,11 +25,11 @@ func NewJSONAPIServer(listenAddr string, svc PriceFetcher) *JSONAPIServer {
 	}
 }
 
-// Start starts the JSON API server and listens on the given listenAddr
-func (s *JSONAPIServer) Start() {
+// Run starts the JSON API server and listens on the given listenAddr
+func (s *JSONAPIServer) Run() {
 	http.HandleFunc("/", makeHTTPHandlerFunc(s.handleFetchPrice))
 
-	fmt.Printf("Listening on %v\n", s.listenAddr)
+	fmt.Printf("json API listening on %v\n", s.listenAddr)
 	http.ListenAndServe(s.listenAddr, nil)
 }
 
