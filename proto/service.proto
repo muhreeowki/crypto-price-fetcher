@@ -11,6 +11,6 @@ message PriceRequest {
 }
 
 message PriceResponse {
-  optional string ticker = 1;
-  optional string error = 2;
+  optional double price = 1;
+  string ticker = 2;
 }
