@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/muhreeowki/price-fetcher/proto"
 	"github.com/muhreeowki/price-fetcher/types"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Client is a client that fetches the price of a ticker from a remote service.
@@ -19,6 +22,20 @@ func New(endpoint string) *Client {
 	return &Client{
 		endpoint: endpoint,
 	}
+}
+
+func NewGRPCPriceFetcherClient(serverAddr string) (proto.PriceFetcherClient, error) {
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+	conn, err := grpc.NewClient(serverAddr, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	grpcClient := proto.NewPriceFetcherClient(conn)
+
+	return grpcClient, nil
 }
 
 // FetchPrice fetches the price of a ticker from the provided endpoint.
