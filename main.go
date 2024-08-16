@@ -5,11 +5,16 @@ import (
 )
 
 func main() {
-	listenAddr := flag.String("listenaddr", ":3000", "listendAddress the service should run on in the format of host:port")
+	var (
+		jsonListenAddr = flag.String("json", ":3000", "listen address of the json transport in the format of host:port")
+		grpcListenAddr = flag.String("grpc", ":4000", "listen address of the grpc transport in the format of host:port")
+		// ctx            = context.Background()
+		svc = NewLoggingService(NewMetricService(&priceFetcher{}))
+	)
 	flag.Parse()
 
-	svc := NewLoggingService(NewMetricService(&priceFetcher{}))
+	go MakeAndRunGRPCServer(*grpcListenAddr, svc)
 
-	server := NewJSONAPIServer(*listenAddr, svc)
-	server.Start()
+	jsonServer := NewJSONAPIServer(*jsonListenAddr, svc)
+	jsonServer.Run()
 }

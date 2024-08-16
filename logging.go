@@ -20,6 +20,7 @@ func (s *loggingService) FetchPrice(ctx context.Context, ticker string) (price f
 			"took":      time.Since(begin),
 			"err":       err,
 			"price":     price,
+			"ticker":    ticker,
 		}).Info("fetchPrice")
 	}(time.Now())
 
